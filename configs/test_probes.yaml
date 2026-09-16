@@ -1,0 +1,64 @@
+# Copyright (c) 2023, MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+# Subject to FAR 52.227-11 - Patent Rights - Ownership by the Contractor (May 2014).
+#
+# Evaluate a CuxO bulk checkpoint on the split_v2 test set, scoring NMAE on
+# 1000 sampled grid points per structure.
+defaults:
+  - model: e3_density
+  - data: mp_data
+  - _self_
+
+lmax: 4
+checkpoint_path: ./checkpoint-models/cuxo_bulk.pt
+
+# No cube writing: we evaluate on sampled probes (test_probes != null).
+cube_dir:
+
+split: "split_v2"
+
+# tensorboard, logs, and tmp files (also where test_set_nmape.csv lands)
+log_dir: ./evaluation_results/cuxo_bulk_test1000
+
+# number of nodes / processes
+nnodes: 1
+nprocs: 1
+
+seed: 42
+cutoff: 4.0
+batch_size: 1
+lr: 0.005
+
+hydra:
+  job:
+    name: test_cuxo_bulk_1000probes
+  run:
+    dir: ${log_dir}
+  sweep:
+    dir: ${hydra.run.dir}
+  callbacks:
+    log_job_return:
+      _target_: hydra.experimental.callbacks.LogJobReturnCallback
+
+data:
+  batch_size: ${batch_size}
+  train_workers: 1
+  val_workers: 1
+  pin_memory: False
+  train_probes: 100
+  val_probes: 400
+  test_probes: 1000
+  data_root: ./data/mp/filelist.txt
+  split_file: ./data/mp/${split}.json
+  grid_size_file: ./data/mp/probe_counts.csv
+  graph_constructor:
+    cutoff: ${cutoff}
+    disable_pbc: False
+
+model:
+  optimizer:
+    lr: ${lr}
+  lr_scheduler:
+    beta: 3e3
+  model:
+    lmax: ${lmax}
+    cutoff: ${cutoff}

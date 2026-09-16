@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Data / results (not tracked in this code-only repo)
+data/
+results/
+evaluation_results/
+checkpoint-models/
+slurmoutputs/
+*.npy
+*.pkl
+*.pt
+
+# SLURM / cluster
+slurm-*.out
+*.out
+*.err
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

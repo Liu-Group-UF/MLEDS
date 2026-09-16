@@ -1,0 +1,64 @@
+# Copyright (c) 2023, MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+# Subject to FAR 52.227-11 - Patent Rights - Ownership by the Contractor (May 2014).
+#
+# Full-grid density prediction for a directory of CuxO bulk structures
+# (arbitrary directory containing .npy/.pkl inputs, filelist.txt, split.json,
+# and probe_counts.csv), writing one predicted density cube per structure.
+defaults:
+  - model: e3_density
+  - data: mp_data
+  - _self_
+
+input_dir: # arbitrary directory containing .npy and .pkl files, with filelist.txt, split.json, and probe_counts.csv
+lmax: 4
+checkpoint_path: ./checkpoint-models/cuxo_bulk.pt
+cube_dir: ${hydra:run.dir}
+defer_cube_materialization: false
+
+# tensorboard, logs, and tmp files
+log_dir: ${hydra:run.dir}
+
+# number of nodes (set to 1 for local execution)
+nnodes: 1
+# number of processes/devices per node
+nprocs: 1  # adjust this based on your local hardware capabilities
+
+seed: 42
+cutoff: 4.0
+batch_size: 1
+lr: 0.005
+
+hydra:
+  job:
+    name: prediction_lmax_${lmax}
+  run:
+    dir: ${input_dir}/${hydra.job.name}
+  sweep:
+    dir: ${hydra.run.dir}
+
+  callbacks:
+    log_job_return:
+      _target_: hydra.experimental.callbacks.LogJobReturnCallback
+
+data:
+  batch_size: ${batch_size}
+  train_workers: 1
+  val_workers: 1
+  pin_memory: False
+  train_probes: 200
+  val_probes: 400
+  test_probes:
+  data_root: ${input_dir}/filelist.txt
+  split_file: ${input_dir}/split.json
+  grid_size_file: ${input_dir}/probe_counts.csv
+  graph_constructor:
+    cutoff: ${cutoff}
+    disable_pbc: False
+
+model:
+  optimizer:
+    lr: ${lr}
+  lr_scheduler:
+    beta: 3e3
+  model:
+    lmax: ${lmax}
