@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1220"/>
+      <stop offset="55%" stop-color="#141b31"/>
+      <stop offset="100%" stop-color="#1c2745"/>
+    </linearGradient>
+
+    <radialGradient id="densityGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8be9fd" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#5eb8f5" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#7c6cf0" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#7c6cf0" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="cuGrad" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#ffcfa0"/>
+      <stop offset="45%" stop-color="#e0813f"/>
+      <stop offset="100%" stop-color="#8a4a1f"/>
+    </radialGradient>
+
+    <radialGradient id="oGrad" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#ffb3b3"/>
+      <stop offset="45%" stop-color="#e2434b"/>
+      <stop offset="100%" stop-color="#7a1620"/>
+    </radialGradient>
+
+    <filter id="blurSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+
+    <filter id="blurTight" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+
+    <pattern id="latticeLines" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M0 60 L60 0" stroke="#3a4a72" stroke-width="1" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <!-- background card -->
+  <rect x="0" y="0" width="1200" height="320" rx="28" fill="url(#bgGrad)"/>
+  <rect x="0" y="0" width="1200" height="320" rx="28" fill="url(#latticeLines)"/>
+
+  <!-- electron density cloud glow above the surface -->
+  <ellipse cx="600" cy="205" rx="560" ry="95" fill="url(#densityGrad)" filter="url(#blurSoft)"/>
+
+  <!-- title -->
+  <text x="600" y="112" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-size="86" font-weight="800" fill="#f5f7fa" letter-spacing="8">MLEDS</text>
+  <text x="600" y="152" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-size="21" fill="#a7b1c7" letter-spacing="0.5">
+    Machine-Learned Electron Densities for Surface &amp; Interfacial Systems
+  </text>
+
+  <!-- divider -->
+  <line x1="440" y1="172" x2="760" y2="172" stroke="#3a4566" stroke-width="1.5"/>
+
+  <!-- surface slab: alternating Cu / O atoms, back row (blurred, receding) -->
+  <g filter="url(#blurTight)" opacity="0.55">
+    <circle cx="150" cy="235" r="20" fill="url(#cuGrad)"/>
+    <circle cx="250" cy="235" r="14" fill="url(#oGrad)"/>
+    <circle cx="350" cy="235" r="20" fill="url(#cuGrad)"/>
+    <circle cx="450" cy="235" r="14" fill="url(#oGrad)"/>
+    <circle cx="550" cy="235" r="20" fill="url(#cuGrad)"/>
+    <circle cx="650" cy="235" r="14" fill="url(#oGrad)"/>
+    <circle cx="750" cy="235" r="20" fill="url(#cuGrad)"/>
+    <circle cx="850" cy="235" r="14" fill="url(#oGrad)"/>
+    <circle cx="950" cy="235" r="20" fill="url(#cuGrad)"/>
+    <circle cx="1050" cy="235" r="14" fill="url(#oGrad)"/>
+  </g>
+
+  <!-- surface slab: front row, in focus -->
+  <g>
+    <circle cx="100" cy="270" r="24" fill="url(#cuGrad)"/>
+    <circle cx="200" cy="270" r="17" fill="url(#oGrad)"/>
+    <circle cx="300" cy="270" r="24" fill="url(#cuGrad)"/>
+    <circle cx="400" cy="270" r="17" fill="url(#oGrad)"/>
+    <circle cx="500" cy="270" r="24" fill="url(#cuGrad)"/>
+    <circle cx="600" cy="270" r="17" fill="url(#oGrad)"/>
+    <circle cx="700" cy="270" r="24" fill="url(#cuGrad)"/>
+    <circle cx="800" cy="270" r="17" fill="url(#oGrad)"/>
+    <circle cx="900" cy="270" r="24" fill="url(#cuGrad)"/>
+    <circle cx="1000" cy="270" r="17" fill="url(#oGrad)"/>
+    <circle cx="1100" cy="270" r="24" fill="url(#cuGrad)"/>
+  </g>
+</svg>

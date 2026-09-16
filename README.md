@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="MLEDS banner" width="900">
+</p>
+
 # MLEDS
 
 **Assessing the Physical Fidelity of Machine-Learned Electron Densities for
