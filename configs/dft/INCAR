@@ -1,0 +1,33 @@
+SYSTEM = SP
+
+# General settings
+ISTART = 0                 # Start from scratch
+ICHARG = 2                 # Use default charge
+ENCUT = 450                # Plane-wave cutoff energy in eV
+PREC = Normal              # Precision mode
+NELM = 100                 # Maximum number of electronic SCF steps
+EDIFF = 1E-6               # Convergence criterion for electronic SCF
+ISMEAR = 0                # Smearing method (Gaussian smearing)
+SIGMA = 0.05               # Smearing width in eV
+
+# Exchange-correlation functional
+GGA = PE                   # Use the PBE functional (RP stands for revised PBE)
+
+# Geometry optimization settings
+IBRION = -1                # Ionic relaxation method (conjugate gradient)
+NSW = 0                    # Maximum number of ionic steps
+EDIFFG = -0.02             # Convergence criterion for ionic relaxation in eV/Å
+
+# Spin-polarized calculations
+#ISPIN = 1
+
+# VASPsol settings
+#LSOL = .TRUE.              # Enable solvation
+#EB_K = 78.4                # Dielectric constant (for water, it's about 80)
+
+# DFT-D3 dispersion correction
+IVDW = 11                  # Enable DFT-D3 dispersion correction
+
+# Output settings
+LWAVE = .FALSE.            # Do not write WAVECAR
+LCHARG = .TRUE.           # Do not write CHGCAR
