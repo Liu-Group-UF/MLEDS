@@ -9,25 +9,34 @@ Surface and Interfacial Systems**
 
 Configs, data-conversion scripts, and driver-code patches used to train and
 evaluate a charge3net-based model for predicting electron density on CuxO
-(CuO / Cu2O) bulk structures, as reported in the manuscript above.
+(CuO / Cu2O) bulk structures, as reported in the manuscript above. Covers
+model training/inference end-to-end; DFT calculation, post-processing, and
+property-evaluation code is included as minimal runnable templates rather
+than the full production pipeline (see below for what that means in practice).
 
 ## Repository structure
 
 ```
 mleds/
-├── configs/                 # Hydra configs
-│   ├── train.yaml
-│   ├── test_probes.yaml     # NMAE on sampled probes
-│   ├── test_chgcar.yaml     # full-grid density cube prediction
+├── configs/
+│   ├── train.yaml             # Hydra configs
+│   ├── test_probes.yaml       # NMAE on sampled probes
+│   ├── test_chgcar.yaml       # full-grid density cube prediction
 │   ├── model/e3_density.yaml
-│   └── data/
-│       ├── mp_data.yaml
-│       └── graph_constructor/kdtree.yaml
-├── run/                      # SLURM launch scripts
-│   ├── preprocess_data.sh
+│   ├── data/
+│   │   ├── mp_data.yaml
+│   │   └── graph_constructor/kdtree.yaml
+│   └── dft/                   # generic VASP INCAR/KPOINTS template
+├── run/
+│   ├── preprocess_data.sh     # SLURM launch scripts
 │   ├── train.sh
-│   └── test_probes.sh
-├── scripts/                  # data conversion / split / QC
+│   ├── test_probes.sh
+│   └── dft/single_structure.sh
+├── scripts/
+│   ├── ...                    # data conversion / split / QC (ML side)
+│   ├── dft/generate_potcar.sh
+│   ├── postprocessing/        # density-error / gradient / force-energy descriptors
+│   └── property_evaluation/   # dipole + Bader charge comparison
 └── src_patch/                 # overlay onto a charge3net checkout's src/
 ```
 
@@ -104,6 +113,51 @@ imports it directly and it's easier to keep the repo self-contained.
 
 Set `--account`/`--qos`/`--partition` in the `run/*.sh` scripts for your
 cluster before submitting.
+
+## DFT calculations, post-processing, and property evaluation
+
+The three sections below are **minimal, generic templates and worked
+examples**, not the production pipeline that generated every number in the
+manuscript. They contain no structure names, POSCARs, CHGCARs, or other data
+from the actual CuxO bulk dataset — every script takes file paths as
+arguments so you can point it at your own structure(s). This is a deliberate
+scope choice: it's enough to reproduce the *method* end-to-end on a
+structure of your own, without checking in the full validation set or the
+multi-category dispatch/aggregation machinery used to batch-process it.
+
+**DFT calculations** (`configs/dft/`, `scripts/dft/`, `run/dft/`) — a
+single-structure VASP ground-truth workflow:
+- `configs/dft/INCAR`, `configs/dft/KPOINTS`: the DFT settings used for CuxO
+  bulk single-point calculations (PBE, ENCUT 450 eV, DFT-D3, 4x4x3
+  Monkhorst-Pack via 0.03 K-spacing). Drop these next to your own `POSCAR`.
+- `scripts/dft/generate_potcar.sh`: concatenates a POTCAR from your local
+  VASP pseudopotential distribution (`POTCAR_DIR=... ./generate_potcar.sh Cu
+  O`). POTCAR files are licensed with VASP and are **not** included here —
+  you need your own installation.
+- `run/dft/single_structure.sh`: SLURM submission template for one
+  structure. Set `--account`/`--qos`/`--partition` and the VASP module for
+  your cluster.
+
+**Post-processing** (`scripts/postprocessing/`) — turning a predicted
+density + a ground-truth CHGCAR into physically-motivated error metrics, for
+one structure at a time:
+- `compute_density_error.py`: absolute/RMSE/NMAE density error.
+- `compute_gradient_descriptors.py`: density-gradient and reduced-gradient
+  (RDG) descriptors, including gradient-weighted error localization.
+- `compute_force_energy_descriptors.py`: the Hartree self-energy of the
+  density error (a 2nd-order proxy for energy error) and per-atom
+  Hellmann-Feynman-integrand descriptors (a proxy for force error), given
+  SCF/NSCF energy+force JSON for the structure.
+
+**Property evaluation** (`scripts/property_evaluation/`) — physical
+properties derived from the density:
+- `compute_dipole_and_bader.py`: dipole moment and Bader charges (via the
+  external [`bader`](http://theory.cm.utexas.edu/henkelman/code/bader/)
+  code) for predicted vs. ground-truth densities of one structure.
+- Work function/dipole-correction analysis is intentionally **not**
+  included here — it does not apply to bulk structures (no vacuum), and the
+  actual work-function pipeline in the source repo targets CuxO *surface*
+  slabs, a different system from this bulk study.
 
 ## License
 
